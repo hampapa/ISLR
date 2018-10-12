@@ -5,8 +5,8 @@
 ### pp. 61-62
 library(tidyverse)
 
-obs_df <- data.frame(x=c(50, 125, 200, 270),
-                     y=c(10, 13.7, 14, 21))
+obs_df <- data.frame(x=c(50, 125, 150, 200, 270),
+                     y=c(10, 13.7, 14, 14.2, 21))
 
 x_bar <- mean(obs_df$x)
 y_bar <- mean(obs_df$y)
@@ -22,9 +22,12 @@ obs_df %>% ggplot(aes(x,y)) +
     geom_segment(aes(x=x,xend=x,y=y_hat,yend=y), color="grey") +
     geom_point() +
     geom_point(aes(x=x_bar, y=y_bar), colour="red")
-    
+
+### Compare manual calculation to R lm() function
 linearMod <- lm(y ~ x, data=obs_df)
 summary(linearMod)
+### Check if residual sum of squares (RSS) are the same between manual
+### calculation and the R lm() function
 sum(resid(linearMod)^2)
 sum(obs_df$e^2)
 
@@ -72,3 +75,38 @@ obs_df %>% ggplot(aes(x,y)) +
     geom_abline(slope=coef_df$slope,
                 intercept=coef_df$intercept, color="lightblue") +
     geom_abline(slope=3, intercept=2, color="red")
+
+
+
+### pp.65-66 - RSE (residual standard error)
+obs_df <- data.frame(x=c(50, 125, 150, 200, 270),
+                     y=c(10, 13.7, 14, 14.2, 21))
+
+x_bar <- mean(obs_df$x)
+y_bar <- mean(obs_df$y)
+
+b1_hat <- sum((obs_df$x - x_bar)*(obs_df$y - y_bar))/sum((obs_df$x - x_bar)^2)
+b0_hat <- y_bar - b1_hat*x_bar
+
+obs_df <- obs_df %>% mutate(y_hat = b0_hat + b1_hat*x,
+                  e = y-y_hat)
+
+n <- length(obs_df$x)
+RSS <- sum(obs_df$e^2)  ## residual sum of squares
+RSE <- sqrt(RSS/(n-2))  ## residual standard error
+
+linearMod <- lm(y ~ x, data=obs_df)
+summary(linearMod)$sigma
+RSE
+
+summary(linearMod)
+SE_b0 = sqrt((RSS/(n-2))*(1/n+(x_bar^2/sum((obs_df$x-x_bar)^2))))
+SE_b0
+SE_b1 =sqrt((RSS/(n-2))/sum((obs_df$x-x_bar)^2))
+SE_b1
+### calculating the 95% confidence interval
+percentile <- 0.95  ## 95% percentile
+q <- 1-(1-percentile)/2
+ci_b1 <- b1_hat + c(-qnorm(q),qnorm(q))*SE_b1  ## might need t-distribution
+ci_b0 <- b0_hat + c(-qnorm(q),qnorm(q))*SE_b0  ## instead of normal dist
+
