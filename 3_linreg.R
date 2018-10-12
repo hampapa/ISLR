@@ -104,9 +104,32 @@ SE_b0 = sqrt((RSS/(n-2))*(1/n+(x_bar^2/sum((obs_df$x-x_bar)^2))))
 SE_b0
 SE_b1 =sqrt((RSS/(n-2))/sum((obs_df$x-x_bar)^2))
 SE_b1
+
+
 ### calculating the 95% confidence interval
 percentile <- 0.95  ## 95% percentile
 q <- 1-(1-percentile)/2
 ci_b1 <- b1_hat + c(-qnorm(q),qnorm(q))*SE_b1  ## might need t-distribution
 ci_b0 <- b0_hat + c(-qnorm(q),qnorm(q))*SE_b0  ## instead of normal dist
 
+
+### pp. 67 - 68
+### H_0: b1 = 0 -> no relationship between X and Y
+### use t-statistic, which measures the number of standard deviations b1_hat
+### is away from 0
+t_stat <- (b1_hat-0)/SE_b1 
+t_stat
+summary(linearMod)
+### Pr(>|t|) 
+pt(-t_stat,df=n-2)+1-pt(t_stat,df=n-2)
+
+
+
+### pp. 68-70 - Assessing the Accuracy of the Model
+### R^2 proportion of variance explained
+TSS <- sum((obs_df$y-y_bar)^2)
+R2 <- 1-(RSS/TSS)
+R2
+
+### http://www-bcf.usc.edu/~gareth/ISL/
+url <- "http://www-bcf.usc.edu/~gareth/ISL/Advertising.csv"
