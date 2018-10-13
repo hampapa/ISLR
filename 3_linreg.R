@@ -132,13 +132,16 @@ R2 <- 1-(RSS/TSS)
 R2
 
 
-### pp. 71-72
+### pp. 71-74
 ### http://www-bcf.usc.edu/~gareth/ISL/
+### https://rafalab.github.io/dsbook/
 library(tidyverse)
 url <- "http://www-bcf.usc.edu/~gareth/ISL/Advertising.csv"
 download.file(url, "data/Advertising.csv")
 dat <- readr::read_csv("data/Advertising.csv")
 
+lm_TV <- lm(sales ~ TV, data=dat)
+summary(lm_TV)
 lm_radio <- lm(sales ~ radio, data=dat)
 summary(lm_radio)
 lm_newspaper <- lm(sales ~ newspaper, data=dat)
@@ -146,3 +149,68 @@ summary(lm_newspaper)
 lm_all <- lm(sales ~ TV+radio+newspaper, data=dat)
 summary(lm_all)
 dat %>% select(TV, radio, newspaper, sales) %>% cor()
+
+p_TV <- dat %>% ggplot(aes(x=TV, y=sales)) +
+    geom_point(shape=1, color="red") +
+    geom_abline(intercept=coef(lm_TV)[1],
+                slope=coef(lm_TV)[2], color="blue", size=0.2) +
+    scale_y_discrete(name="Sales (units)", limits=c(seq(5,25,5))) +
+    theme_bw() +
+    theme(panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),
+          panel.border=element_rect(color="black",size=0.2),
+          axis.line=element_line(color="black",size=0.2))
+
+p_radio <- dat %>% ggplot(aes(x=radio, y=sales)) +
+    geom_point(shape=1, color="red") +
+    geom_abline(intercept=coef(lm_radio)[1],
+                slope=coef(lm_radio)[2], color="blue", size=0.2) +
+    scale_y_discrete(name="Sales (units)", limits=c(seq(5,25,5))) +
+    theme_bw() +
+    theme(panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),
+          panel.border=element_rect(color="black",size=0.2),
+          axis.line=element_line(color="black",size=0.2))
+
+p_newspaper <- dat %>% ggplot(aes(x=newspaper, y=sales)) +
+    geom_point(shape=1, color="red") +
+    geom_abline(intercept=coef(lm_newspaper)[1],
+                slope=coef(lm_newspaper)[2], color="blue", size=0.2) +
+    scale_y_discrete(name="Sales (units)", limits=c(seq(5,25,5))) +
+    theme_bw() +
+    theme(panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),
+          panel.border=element_rect(color="black",size=0.2),
+          axis.line=element_line(color="black",size=0.2))
+
+gridExtra::grid.arrange(p_TV, p_radio, p_newspaper, ncol=3)
+
+
+
+### pp. 84-85
+library(ISLR)
+data(Credit)
+
+lm_gender <- lm(Balance ~ Gender, data=Credit)
+summary(lm_gender)
+
+Credit %>% ggplot(aes(x=Age,y=Balance, color=Gender)) +
+    geom_point(shape=1) +
+    geom_hline(yintercept=coef(lm_gender)[1], color="Blue", size=0.5) +
+    geom_hline(yintercept=coef(lm_gender)[1]+coef(lm_gender)[2],
+               color="Green", size=0.5) +
+    theme_bw()
+
+### recode Gender factor (female,male) into +1,-1
+alt_credit <- Credit %>% mutate(gen=ifelse(Gender=="Female",1,-1))
+lm_gen <- lm(Balance ~ gen, data=alt_credit)
+summary(lm_gen)
+### Predictors w/more than 2 levels
+lm_ethn <- lm(Balance ~ Ethnicity, data=Credit)
+summary(lm_ethn)
+
+alt2_credit <- Credit %>%
+    mutate(et_as=ifelse(Ethnicity=="Asian",1,0),
+           et_ca=ifelse(Ethnicity=="Caucasian",1,0))
+lm2_ethn <- lm(Balance ~ et_as + et_ca, data=alt2_credit)
+summary(lm2_ethn)
