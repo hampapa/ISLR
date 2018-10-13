@@ -131,5 +131,18 @@ TSS <- sum((obs_df$y-y_bar)^2)
 R2 <- 1-(RSS/TSS)
 R2
 
+
+### pp. 71-72
 ### http://www-bcf.usc.edu/~gareth/ISL/
+library(tidyverse)
 url <- "http://www-bcf.usc.edu/~gareth/ISL/Advertising.csv"
+download.file(url, "data/Advertising.csv")
+dat <- readr::read_csv("data/Advertising.csv")
+
+lm_radio <- lm(sales ~ radio, data=dat)
+summary(lm_radio)
+lm_newspaper <- lm(sales ~ newspaper, data=dat)
+summary(lm_newspaper)
+lm_all <- lm(sales ~ TV+radio+newspaper, data=dat)
+summary(lm_all)
+dat %>% select(TV, radio, newspaper, sales) %>% cor()
