@@ -189,7 +189,13 @@ gridExtra::grid.arrange(p_TV, p_radio, p_newspaper, ncol=3)
 
 ### pp. 84-85
 library(ISLR)
+library(GGally)
 data(Credit)
+
+### https://gastonsanchez.wordpress.com/2012/08/27/scatterplot-matrices-with-ggplot/
+pairs(Credit[,c(12,2:7)])
+
+ggpairs(Credit[,c(12,2:7)])  ## intall.packages("GGally")
 
 lm_gender <- lm(Balance ~ Gender, data=Credit)
 summary(lm_gender)
@@ -214,3 +220,20 @@ alt2_credit <- Credit %>%
            et_ca=ifelse(Ethnicity=="Caucasian",1,0))
 lm2_ethn <- lm(Balance ~ et_as + et_ca, data=alt2_credit)
 summary(lm2_ethn)
+
+
+
+### pp. 87-88
+### Interaction terms: Y = b0 + b1*X1 + b2*X2 + b3*X1*X2 + e
+dat <- readr::read_csv("data/Advertising.csv")
+
+lm_main_effect <- lm(sales ~TV + radio, data=dat)
+summary(lm_main_effect)
+lm_interact <- lm(sales ~ TV + radio + TV*radio, data=dat)
+summary(lm_interact)
+
+### pp. 89-90
+library(ISLR)
+data(Credit)
+
+
