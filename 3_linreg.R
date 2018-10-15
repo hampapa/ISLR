@@ -233,7 +233,58 @@ lm_interact <- lm(sales ~ TV + radio + TV*radio, data=dat)
 summary(lm_interact)
 
 ### pp. 89-90
+library(tidyverse)
 library(ISLR)
 data(Credit)
 
+lm_student <- lm(Balance ~ Income + Student, data=Credit)
+summary(lm_student)
+### without interaction between Income and Student we have 2 parallel
+### regression lines (red = StudentYes)
+p1 <- Credit %>% ggplot(aes(x=Income,y=Balance,color=Student)) +
+    geom_point(show.legend=FALSE) +
+    geom_abline(intercept=coef(lm_student)[1],
+                slope=coef(lm_student)[2], color="black") +
+    geom_abline(intercept=coef(lm_student)[1]+coef(lm_student)[3],
+                slope=coef(lm_student)[2], color="red") +
+    theme_bw()
+### this linear model includes an interaction variable of Income
+lm2_student <- lm(Balance ~ Income + Student + Income*Student, data=Credit)
+summary(lm2_student)
+
+p2 <- Credit %>% ggplot(aes(x=Income,y=Balance,color=Student)) +
+    geom_point() +
+    geom_abline(intercept=coef(lm2_student)[1],
+                slope=coef(lm2_student)[2], color="black") +
+    geom_abline(intercept=coef(lm2_student)[1]+coef(lm2_student)[3],
+                slope=coef(lm2_student)[2]+coef(lm2_student)[4], color="red") +
+    theme_bw()
+
+gridExtra::grid.arrange(p1, p2, ncol=2)
+
+
+
+### pp. 91-92
+### Polynomial Regression
+library(tidyverse)
+library(ISLR)
+data(Auto)
+
+lm_mpg <- lm(mpg ~ horsepower, data=Auto)
+summary(lm_mpg)
+lm2_mpg <- lm(mpg ~ horsepower + I(horsepower^2), data=Auto)
+summary(lm2_mpg)
+
+Auto %>% ggplot(aes(x=horsepower, y=mpg)) +
+    geom_point(shape=1, color="grey") +
+    geom_abline(intercept=coef(lm_mpg)[1], slope=coef(lm_mpg)[2],
+                color="orange", size=0.3) +
+    stat_smooth(method="lm", se=FALSE,
+                formula=y~x+I(x^2), size=0.3,
+                color="blue", fullrange=T) +
+    theme_bw() +
+    theme(panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),
+          panel.border=element_rect(color="black",size=0.2),
+          axis.line=element_line(color="black",size=0.2))
 
