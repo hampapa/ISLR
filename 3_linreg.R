@@ -274,6 +274,10 @@ lm_mpg <- lm(mpg ~ horsepower, data=Auto)
 summary(lm_mpg)
 lm2_mpg <- lm(mpg ~ horsepower + I(horsepower^2), data=Auto)
 summary(lm2_mpg)
+lm3_mpg <- lm(mpg ~ horsepower + I(horsepower^2) +
+                  I(horsepower^3) + I(horsepower^4) +
+            I(horsepower^5), data=Auto)
+summary(lm3_mpg)
 
 Auto %>% ggplot(aes(x=horsepower, y=mpg)) +
     geom_point(shape=1, color="grey") +
@@ -282,6 +286,9 @@ Auto %>% ggplot(aes(x=horsepower, y=mpg)) +
     stat_smooth(method="lm", se=FALSE,
                 formula=y~x+I(x^2), size=0.3,
                 color="blue", fullrange=T) +
+    stat_smooth(method="lm", se=FALSE,
+                formula=y~x+I(x^2)+I(x^3)+I(x^4)+I(x^5), size=0.3,
+                color="green", fullrange=T) +
     theme_bw() +
     theme(panel.grid.major=element_blank(),
           panel.grid.minor=element_blank(),
