@@ -295,3 +295,23 @@ Auto %>% ggplot(aes(x=horsepower, y=mpg)) +
           panel.border=element_rect(color="black",size=0.2),
           axis.line=element_line(color="black",size=0.2))
 
+### pp. 92-93
+### Residual plots
+lm_mpg <- lm(mpg ~ horsepower, data=Auto)
+summary(lm_mpg)
+
+y <- Auto$mpg
+y_hat <- coef(lm_mpg)[1] + coef(lm_mpg)[2]*Auto$horsepower
+res <- y - y_hat
+mres <- residuals(lm_mpg)
+res_df = data.frame(y_hat=y_hat, res=res, mres=mres)
+
+res_df %>% ggplot(aes(x=y_hat,y=res)) +
+    geom_point(shape=1) +
+    geom_point(aes(y=mres), color="green", shape=2) +
+    geom_smooth(method=loess, formula=y~x, se=FALSE, size=0.3) +
+    theme_bw()
+
+lm2_mpg <- lm(mpg ~ horsepower + I(horsepower^2), data=Auto)
+summary(lm2_mpg)
+mres2 <- residuals(lm2_mpg)
