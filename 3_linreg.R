@@ -302,10 +302,10 @@ summary(lm_mpg)
 
 y <- Auto$mpg
 y_hat <- coef(lm_mpg)[1] + coef(lm_mpg)[2]*Auto$horsepower
+y2_hat <- predict(lm_mpg)
 res <- y - y_hat
 mres <- residuals(lm_mpg)
 res_df = data.frame(y_hat=y_hat, res=res, mres=mres)
-
 res_df %>% ggplot(aes(x=y_hat,y=res)) +
     geom_point(shape=1) +
     geom_point(aes(y=mres), color="green", shape=2) +
@@ -315,3 +315,10 @@ res_df %>% ggplot(aes(x=y_hat,y=res)) +
 lm2_mpg <- lm(mpg ~ horsepower + I(horsepower^2), data=Auto)
 summary(lm2_mpg)
 mres2 <- residuals(lm2_mpg)
+y2_hat <- predict(lm2_mpg)
+res2_df <- data.frame(x=y2_hat, y=mres2)
+res2_df %>% ggplot(aes(x=y2_hat,y=mres2)) +
+    geom_point(shape=1) +
+    geom_smooth(method=loess, formula=y~x, se=FALSE, size=0.3) +
+    theme_bw()
+
