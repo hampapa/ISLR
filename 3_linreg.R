@@ -297,6 +297,10 @@ Auto %>% ggplot(aes(x=horsepower, y=mpg)) +
 
 ### pp. 92-93
 ### Residual plots
+library(tidyverse)
+library(ISLR)
+data(Auto)
+
 lm_mpg <- lm(mpg ~ horsepower, data=Auto)
 summary(lm_mpg)
 
@@ -321,4 +325,40 @@ res2_df %>% ggplot(aes(x=y2_hat,y=mres2)) +
     geom_point(shape=1) +
     geom_smooth(method=loess, formula=y~x, se=FALSE, size=0.3) +
     theme_bw()
+### Studentized residuals
+mres2_stud <- rstudent(lm2_mpg)
+res3_df <- data.frame(x=y2_hat, y=mres2_stud)
+res3_df %>% ggplot(aes(x=y2_hat,y=mres2_stud)) +
+    geom_point(shape=1) +
+    theme_bw()
+
+
+
+### pp. 99-
+### Collinearity
+library(tidyverse)
+library(plotly)
+library(ISLR)
+data(Credit)
+
+p1 <- Credit %>% ggplot(aes(x=Limit, y=Age)) +
+    geom_point(shape=1) +
+    theme_bw()
+p2 <- Credit %>% ggplot(aes(x=Limit, y=Rating)) +
+    geom_point(alpha=0.3, color="blue") +
+    theme_bw()
+gridExtra::grid.arrange(p1, p2, ncol=2)
+
+lm_al <- lm(Balance ~ Age + Limit, data=Credit)
+summary(lm_la)
+
+lm_rl <- lm(Balance ~ Rating + Limit, data=Credit)
+summary(lm_rl)
+
+b_Limit <- coef(lm_la)[2]
+b_Age <- coef(lm_la)[3]
+y_hat <- coef(lm_la)[1] + b_Limit*Credit$Limit + b_Age*Credit$Age
+y <- Credit$Balance
+e <-  y - y_hat
+RSS0 <- sum(e^2)
 
