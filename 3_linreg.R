@@ -23,6 +23,8 @@ obs_df %>% ggplot(aes(x,y)) +
     geom_point() +
     geom_point(aes(x=x_bar, y=y_bar), colour="red")
 
+### https://github.com/JWarmenhoven/ISLR-python/issues/1
+
 ### Compare manual calculation to R lm() function
 linearMod <- lm(y ~ x, data=obs_df)
 summary(linearMod)
